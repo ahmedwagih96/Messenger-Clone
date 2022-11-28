@@ -1,8 +1,13 @@
+import ChatInput from "./components/ChatInput";
+import MessageList from "./components/MessageList";
 
 function HomePage() {
   return (
-    <div className="text-2xl">HomePage</div>
-  )
+    <main>
+      <MessageList />
+      <ChatInput />
+    </main>
+  );
 }
 
-export default HomePage
+export default HomePage;
