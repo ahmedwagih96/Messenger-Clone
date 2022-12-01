@@ -1,13 +1,16 @@
 "use client";
 
+import { unstable_getServerSession } from "next-auth";
 import { FormEvent, useState } from "react";
 import useSWR from "swr";
 import { v4 as uuid } from "uuid";
 import { Message as MessageType } from "../../typings";
 import fetchMessages from "../../utils/fetchMessages";
-type Props = {};
+type Props = {
+  session: Awaited<ReturnType<typeof unstable_getServerSession>>;
+};
 
-function ChatInput({}: Props) {
+function ChatInput({ session }: Props) {
   const [input, setInput] = useState<string>("");
 
   const {
@@ -19,7 +22,7 @@ function ChatInput({}: Props) {
   const addMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!input) return;
+    if (!input || !session) return;
 
     const messageToSend = input;
 
@@ -31,10 +34,9 @@ function ChatInput({}: Props) {
       id,
       messageToSend,
       created_at: Date.now(),
-      username: "Ahmed Alaa",
-      profilePic:
-        "https://media-exp1.licdn.com/dms/image/C4E03AQELKf4u0Q8HZw/profile-displayphoto-shrink_200_200/0/1651101391967?e=1675296000&v=beta&t=fuEPXlOSpKIzZi072NzOWKI0hPV-rw52DrbRx8uck58",
-      email: "ahmd.wagih96@gmail.com",
+      username: session?.user?.name!,
+      profilePic: session?.user?.image!,
+      email: session?.user?.email!,
     };
 
     const uploadMessage = async () => {
@@ -57,7 +59,7 @@ function ChatInput({}: Props) {
   return (
     <form
       onSubmit={addMessage}
-      className="flex gap-2 px-10 py-2 border-t border-gray-100 fixed bottom-0 z-50 w-full"
+      className="flex gap-2 px-10 py-2 border-t border-gray-100 fixed bottom-0 z-50 w-full bg-white"
     >
       <input
         type="text"
@@ -65,6 +67,7 @@ function ChatInput({}: Props) {
         placeholder="Enter message here.."
         value={input}
         onChange={(e) => setInput(e.target.value)}
+        disabled={!session}
       />
       <button
         type="submit"

@@ -1,9 +1,10 @@
+import { unstable_getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import LogoutButton from "./components/LogoutButton";
 
-function Header() {
-  const session = true;
+async function Header() {
+  const session = await unstable_getServerSession();
   if (session)
     return (
       <header className="sticky top-0 z-50 bg-white flex justify-between items-center p-10 shadow-sm">
@@ -12,12 +13,12 @@ function Header() {
             className="rounded-full mx-2 object-contain"
             height={10}
             width={50}
-            src="https://links.papareact.com/jne"
+            src={session.user?.image!}
             alt="profile picture"
           />
           <div>
             <p className="text-blue-400">Logged in as:</p>
-            <p className="font-bold text-lg">Ahmed Alaa</p>
+            <p className="font-bold text-lg">{session.user?.name}</p>
           </div>
         </div>
         <LogoutButton />
@@ -35,12 +36,12 @@ function Header() {
           />
           <p className="text-blue-400">Welcome to Meta Messenger</p>
         </div>
-        <Link
-          href="/auth/sigin"
+        {/* <Link
+          href="/auth/signin"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
         >
           Sign In
-        </Link>
+        </Link> */}
       </div>
     </header>
   );
